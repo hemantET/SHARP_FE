@@ -1,11 +1,20 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import "react-responsive-modal/styles.css";
 import { Modal } from "react-responsive-modal";
 import ReactDOM from "react-dom";
 import Countdown from "react-countdown";
+import { ToastContainer, toast } from 'react-toast'
 
+// import M from "materialize-css";
 const Login = () => {
+  const history = useHistory();
+  //FORM DATA
+  const [email, setEmail] = useState("");
+  const [password, setPasword] = useState("");
+  console.log("LOGIN_INPUT====>", email, password);
+
+  //CLICK OPERATION
   const [open, setOpen] = useState(false);
   const [open1, setOpen1] = useState(false);
 
@@ -15,6 +24,43 @@ const Login = () => {
   const onCloseModal1 = () => setOpen1(false);
   const Completionist = () => <span>You are good to go!</span>;
 
+  const PostData = () => {
+    //console.log("heloo Login");
+    fetch("/api/v1/auth/login", {
+      method: "post",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        password,
+        email,
+      }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        console.log("USER_DATA====>", data);
+
+        if (data.data.token) {
+          localStorage.setItem("jwt", data.data.token);
+          localStorage.setItem("user", JSON.stringify(data.data.user));
+          //dispatch({type:"USER",payload:data.user})
+          toast.error("err")
+          // M.toast({
+          //   html: "LOGIN SUCCESSFULL !",
+          //   classes: "#43a047 green darken-1",
+          // });
+          history.push("/dashBoard");
+        } else {
+          history.push("/Login");
+          toast.error("jhgajds")
+
+          // M.toast({ html: "LOGIN FAILED !", classes: "#c62828 red darken-3" });
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
   // Renderer callback with condition
   const renderer = ({ days, hours, minutes, seconds, completed }) => {
     if (completed) {
@@ -72,7 +118,7 @@ const Login = () => {
       );
     }
   };
-  
+
   return (
     <div>
       <div className="nhmLoginwrap">
@@ -119,11 +165,22 @@ const Login = () => {
                     <form className="formField">
                       <div className="form-group">
                         <label>E-MAIL ADDRESS</label>
-                        <input type="email" className="form-control" />
+                        <input
+                          type="email"
+                          className="form-control"
+                          value={email}
+                          onChange={(e) => setEmail(e.target.value)}
+                          
+                        />
                       </div>
                       <div className="form-group">
                         <label>PASSWORD</label>
-                        <input type="text" className="form-control" />
+                        <input
+                          type="text"
+                          className="form-control"
+                          value={password}
+                          onChange={(e) => setPasword(e.target.value)}
+                        />
                       </div>
                       <div className="checkBoxBtn">
                         <div className="form-check">
@@ -153,7 +210,8 @@ const Login = () => {
                           className="loginBtn"
                           data-toggle="modal"
                           data-target="#cmn-popup"
-                          onClick={onOpenModal}
+                          // onClick={onOpenModal}
+                          onClick={() => PostData()}
                         >
                           Login
                         </button>
@@ -892,8 +950,11 @@ const Login = () => {
         </div>
         {/* </div> */}
       </Modal>
+   
+      <ToastContainer />
     </div>
-  );
+ 
+ );
 };
 
 export default Login;

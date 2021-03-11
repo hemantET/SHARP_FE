@@ -3,7 +3,7 @@ import Footer from "./footer";
 import { Link } from "react-router-dom";
 const Layout = (props) => {
   const [open, setOpen] = useState(false);
-  console.log(open);
+
 
   const onSlide = () => {
     setOpen((open) => !open);
