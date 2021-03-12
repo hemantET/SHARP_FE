@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import Footer from "./footer";
+import Footer from "../footer";
 import { Link } from "react-router-dom";
-const Layout = (props) => {
+const AdminLayout = (props) => {
   const [open, setOpen] = useState(false);
 
 
@@ -25,19 +25,17 @@ const Layout = (props) => {
             </div>
 
             <div className="header-right d-flex align-items-center justify-content-end">
-              <Link to="/dashBoard">
               <div className="header-logo">
                 <img
                   src={process.env.PUBLIC_URL + "/assets/images/logo-main.png"}
                   className="img-fluid"
                 />
               </div>
-              </Link>
               <div className="profile-icon">
                 <div className="dropdown show">
-                  <Link
+                  <a
                     className="btn btn-secondary dropdown-toggle"
-                    to="/profile"
+                    href="#"
                     role="button"
                     id="dropdownMenuLink"
                     data-toggle="dropdown"
@@ -50,7 +48,7 @@ const Layout = (props) => {
                       }
                       className="img-fluid"
                     />
-                  </Link>
+                  </a>
                 </div>
               </div>
             </div>
@@ -64,7 +62,7 @@ const Layout = (props) => {
             <div className="side-menu">
               <ul>
                 <li className="Dashboard-menu ">
-                  <Link to="/dashBoard">
+                  <Link to="/admin/dashBoard">
                     <div className="side-menuimg">
                       <img
                         className="greyicon"
@@ -87,7 +85,7 @@ const Layout = (props) => {
                   </Link>
                 </li>
                 <li className="Agenda-menu">
-                  <Link to="/agenda">
+                  <Link to="/admin/agenda_show">
                     <div className="side-menuimg">
                       <img
                         className="greyicon"
@@ -348,4 +346,4 @@ const Layout = (props) => {
   );
 };
 
-export default Layout;
+export default AdminLayout;
