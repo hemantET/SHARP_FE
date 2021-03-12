@@ -26,9 +26,13 @@ import Admin_Layout from "./component/admin/admin_Layout";
 import Admin_Login from './component/admin/admin_Login'
 import Admin_Dashboard  from './component/admin/dashBoard.js/dashboard_Admin'
 import Admin_Agenda_Show from './component/admin/agenda/showAgenda'
+import Admin_Agenda_Edit from './component/admin/agenda/editAgenda'
 const Routing = () => {
   return (
     <Switch>
+       <Route exact path="/admin/agenda_Edit/:id">
+        <Admin_Agenda_Edit />
+      </Route>
        <Route exact path="/admin/agenda_show">
         <Admin_Agenda_Show />
       </Route>
