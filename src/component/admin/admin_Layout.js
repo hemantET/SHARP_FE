@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import Footer from "../footer";
+import Footer from "../admin/admin_Footer";
 import { Link } from "react-router-dom";
 const AdminLayout = (props) => {
   const [open, setOpen] = useState(false);
@@ -12,7 +12,7 @@ const AdminLayout = (props) => {
   return (
     <div>
       <header>
-        <nav className="navbar navbar-expand-lg fixed-top">
+        <nav className="navbar navbar-expand-lg fixed-top" style={{backgroundColor:"blue"}}>
           <div className="header_inner d-flex align-items-center justify-content-between">
             <div className="header-left">
               <img
@@ -20,6 +20,7 @@ const AdminLayout = (props) => {
                 src={
                   process.env.PUBLIC_URL + "/assets/images/hamburger-icon.png"
                 }
+                
                 onClick={onSlide}
               />
             </div>
@@ -57,7 +58,7 @@ const AdminLayout = (props) => {
       </header>
 
       <section classname="main-sec">
-        <div className="page-wrap d-flex">
+        <div className=" d-flex">
           <div className={open ? "left-sidebar menuhideshow" : "left-sidebar"}>
             <div className="side-menu">
               <ul>

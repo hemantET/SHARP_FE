@@ -43,13 +43,16 @@ const AdminAgenda = (props) => {
             <br></br>
             <form>
               <div className="form-group">
+
+                
                 <label htmlFor="exampleInputPassword1">Days</label>
                 <input
-                  type="text"
+                 type="date"
                   className="form-control"
                   id="exampleInputPassword1"
                   placeholder="Days"
                   value={day}
+                  
                   onChange={(e) => setDay(e.target.value)}
                 />
               </div>

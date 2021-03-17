@@ -1,9 +1,9 @@
 import React from "react";
 require("dotenv").config();
-const Footer = () => {
+const AdminFooter = () => {
   return (
     <div>
-      <footer>
+      <footer style={{backgroundColor:"blue"}}>
         <div className="container">
           <div className="row align-items-center">
             <div className="col-4">
@@ -45,7 +45,6 @@ const Footer = () => {
             </div>
             <div className="col-4">
               <div className="footer-logo">
-                <a href="https://www.illumeet.com/">
                 <img
                   className="img-fluid"
                   src={
@@ -53,7 +52,6 @@ const Footer = () => {
                   }
                   alt=""
                 />
-                </a>
               </div>
             </div>
             <div className="col-4">
@@ -68,4 +66,4 @@ const Footer = () => {
   );
 };
 
-export default Footer;
+export default AdminFooter;

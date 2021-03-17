@@ -1,19 +1,67 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
 import Layout from "../layout";
 import { Link } from "react-router-dom";
+import Pagination from "../Pagination/Pagination";
+import paginate from "../Pagination/paginate";
+import { gt } from "lodash";
 
 const Agenda = (props) => {
+  const [read_More, setReadMore] = useState(false);
+  const users = useSelector((state) => state.users);
+  console.log("useselector==========>", users[0].user);
+  const [open, setOpen] = useState(false);
+  // console.log("clickACTIVITY", open);
   const [agenda, setAgenda] = useState([]);
+  // const [fav, setFav] = useState();
+  // console.log("AGENDA_FAV_DATA",fav)
 
-  fetch("/api/v1/agenda/getAllAgenda", {
-    headers: {
-      Authorization: "Bearer " + localStorage.getItem("jwt"),
-    },
-  })
-    .then((res) => res.json())
-    .then((data) => {
-      setAgenda(data);
-    });
+  const heart = (agendaId) => {
+    console.log(agendaId);
+    setOpen((open) => !open);
+    fetch("/api/v1/agenda/addFavouriteAgenda", {
+      method: "post",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + localStorage.getItem("jwt"),
+      },
+      body: JSON.stringify({
+        agenda_id: agendaId,
+        user_id: users[0].user._id,
+        status: open,
+      }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        console.log("AGENDA_FAV_DATA", data.data);
+        // setFav(data.data.status)
+      });
+  };
+  //READ MORE
+  var readMore = (data) => {
+    console.log("clickACTIVITY", data);
+    setReadMore((read_More) => !read_More);
+  };
+
+  //GETTING ALL AGENDA
+
+  const getAgendaData = () => {
+    fetch("/api/v1/agenda/getAllAgenda", {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + localStorage.getItem("jwt"),
+      },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        setAgenda(data.data);
+      });
+  };
+
+  useEffect(() => {
+    getAgendaData();
+  }, []);
+
   console.log("AGENDA_INFO=====>", agenda);
   return (
     <div>
@@ -24,303 +72,91 @@ const Agenda = (props) => {
             <div className="page-heading">
               <h2>Agenda</h2>
               <div className="viewagendabtn">
-                <a href="#">View My Agenda</a>
+                <Link to="/profile">View My Agenda</Link>
               </div>
             </div>
-            {/*----==================page main heading ends==================----*/}
-            {/*----==================faq listing section start==================----*/}
-            <div className="agendalistheading">
-              <h1>Saturday, April 24, 2021</h1>
-            </div>
-            <div className="cmnlistwrap agendalistwrap red-box">
-              <div className="cmnlist row">
-                <div className="col-lg-12 p-0">
-                  <div className="agendatxtwraper">
-                    <div className="cmnlisttxt">
-                      <h2>8:00AM</h2>
+            <div>
+              {agenda.map((value) => {
+                return (
+                  <div>
+                    <div className="agendalistheading">
+                      <h1>{value.day}</h1>
                     </div>
-                    <div className="agndatxtouter d-flex">
-                      <div className="cmnlisttxt col">
-                        <h3>Exhibit Hall Opens </h3>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="cmnlist row">
-                <div className="col-lg-12 p-0">
-                  <div className="agendatxtwraper">
-                    <div className="cmnlisttxt">
-                      <h2>9:00AM</h2>
-                    </div>
-                    <div className="agndatxtouter d-flex">
-                      <div className="cmnlisttxt col">
-                        <h3>
-                          Welcome Intention / Movement Yoga Stretch{" "}
-                          <span className="hrt-img">
-                            <img
-                              className
-                              src={
-                                process.env.PUBLIC_URL +
-                                "/assets/images/heart-empty.png"
-                              }
-                            />
-                          </span>
-                        </h3>
-                        <h3>Main Stage</h3>
-                        <div className="faq-excert ">
-                          <p>
-                            Lorem ipsum dolor sit amet, consectetuer adipiscing
-                            elit, sed diam nonummy nibh euismod tincidunt ut
-                            laoreet dolore magna aliquam erat volutpat. Ut wisi
-                            enim ad minim veniam, quis nostrud exerci tation
-                            ullamcorper suscipit lobortis nisl ut aliquip ex ea
-                            commodo consequat. Duis autem vel eum iriure dolor
-                            in Lorem ipsum dolor sit amet, consectetuer
-                            adipiscing elit, sed diam nonummy nibh euismod
-                            tincidunt ut laoreet dolore magna aliquam erat
-                            volutpat. Ut wisi enim ad minim Lorem ipsum dolor
-                            sit amet, consectetuer adipiscing elit, sed diam
-                            nonummy nibh euismod tincidunt ut laoreet dolore
-                            magna aliquam erat volutpat. Ut wisi enim ad minim{" "}
-                          </p>
+                    <div className="cmnlistwrap agendalistwrap red-box">
+                      <div className="cmnlist row">
+                        <div className="col-lg-12 p-0">
+                          <div className="agendatxtwraper">
+                            <div className="cmnlisttxt">
+                              <h2>
+                                {value.time} {value._id}
+                              </h2>
+                            </div>
+                            <div className="agndatxtouter d-flex">
+                              <div className="cmnlisttxt col">
+                                <h3>
+                                  {value.title}
+                                  <span
+                                    onClick={() => {
+                                      heart(value._id);
+                                    }}
+                                  >
+                                    {open ? (
+                                      <span className="hrt-img">
+                                        <img
+                                          className
+                                          src={
+                                            process.env.PUBLIC_URL +
+                                            "/assets/images/heartfill-2.png"
+                                          }
+                                        />
+                                      </span>
+                                    ) : (
+                                      <span className="hrt-img">
+                                        <img
+                                          className
+                                          src={
+                                            process.env.PUBLIC_URL +
+                                            "/assets/images/heart-empty.png"
+                                          }
+                                        />
+                                      </span>
+                                    )}
+                                  </span>
+                                </h3>
+                                <h3>Main Stage</h3>
+                                <div className="faq-excert ">
+                                  <p>
+                                    {read_More
+                                      ? value.description.substring(0, 300)
+                                      : value.description}
+                                  </p>
+                                </div>
+                              </div>
+                              <div className="agendabtnwrap text-right col-auto p-0">
+                                <div className="agendabtnwrap text-right col-auto p-0">
+                                  <a
+                                    className="faqbtn agendabtn"
+                                    href="#"
+                                    onClick={(e) => readMore(value)}
+                                  >
+                                    Learn More{" "}
+                                    {read_More
+                                      ? value._id && <>&gt;</>
+                                      : value._id && <span>&gt;</span>}
+                                  </a>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
                         </div>
                       </div>
-                      <div className="agendabtnwrap text-right col-auto p-0">
-                        <a className="faqbtn agendabtn" href="#">
-                          Learn More <span>&gt;</span>
-                        </a>
-                      </div>
                     </div>
                   </div>
-                </div>
-              </div>
-              <div className="cmnlist row">
-                <div className="col-lg-12 p-0">
-                  <div className="agendatxtwraper">
-                    <div className="agndatxtouter d-flex">
-                      <div className="cmnlisttxt col">
-                        <h3>
-                          Sharp Executive Welcome{" "}
-                          <span className="hrt-img">
-                            <img
-                              className
-                              src={
-                                process.env.PUBLIC_URL +
-                                "/assets/images/heart-empty.png"
-                              }
-                            />
-                          </span>
-                        </h3>
-                        <h3>Main Stage</h3>
-                      </div>
-                      <div className="agendabtnwrap text-right col-auto p-0">
-                        <a className="faqbtn agendabtn" href="#">
-                          Learn More <span>&gt;</span>
-                        </a>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="cmnlist row">
-                <div className="col-lg-12 p-0">
-                  <div className="agendatxtwraper">
-                    <div className="agndatxtouter d-flex">
-                      <div className="cmnlisttxt col">
-                        <h3>
-                          Emcee Introduction{" "}
-                          <span className="hrt-img">
-                            <img
-                              className
-                              src={
-                                process.env.PUBLIC_URL +
-                                "/assets/images/heart-empty.png"
-                              }
-                            />
-                          </span>
-                        </h3>
-                        <h3>Main Stage</h3>
-                      </div>
-                      <div className="agendabtnwrap text-right col-auto p-0">
-                        <a className="faqbtn agendabtn" href="#">
-                          Learn More <span>&gt;</span>
-                        </a>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="cmnlist row">
-                <div className="col-lg-12 p-0">
-                  <div className="agendatxtwraper">
-                    <div className="cmnlisttxt">
-                      <h2>9:20AM</h2>
-                    </div>
-                    <div className="agndatxtouter d-flex">
-                      <div className="cmnlisttxt col">
-                        <h3>
-                          Opening Keynote{" "}
-                          <span className="hrt-img">
-                            <img
-                              className
-                              src={
-                                process.env.PUBLIC_URL +
-                                "/assets/images/heart-empty.png"
-                              }
-                            />
-                          </span>
-                        </h3>
-                        <h3>Main Stage</h3>
-                      </div>
-                      <div className="agendabtnwrap text-right col-auto p-0">
-                        <a className="faqbtn agendabtn" href="#">
-                          Learn More <span>&gt;</span>
-                        </a>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="cmnlist row">
-                <div className="col-lg-12 p-0">
-                  <div className="agendatxtwraper">
-                    <div className="cmnlisttxt">
-                      <h2>9:00AM</h2>
-                    </div>
-                    <div className="agndatxtouter d-flex">
-                      <div className="cmnlisttxt col">
-                        <h3>
-                          Welcome Intention / Movement Yoga Stretch{" "}
-                          <span className="hrt-img">
-                            <img
-                              className
-                              src={
-                                process.env.PUBLIC_URL +
-                                "/assets/images/heart-empty.png"
-                              }
-                            />
-                          </span>
-                        </h3>
-                        <h3>Main Stage</h3>
-                        <div className="faq-excert ">
-                          <p>
-                            Lorem ipsum dolor sit amet, consectetuer adipiscing
-                            elit, sed diam nonummy nibh euismod tincidunt ut
-                            laoreet dolore magna aliquam erat volutpat. Ut wisi
-                            enim ad minim veniam, quis nostrud exerci tation
-                            ullamcorper suscipit lobortis nisl ut aliquip ex ea
-                            commodo consequat. Duis autem vel eum iriure dolor
-                            in Lorem ipsum dolor sit amet, consectetuer
-                            adipiscing elit, sed diam nonummy nibh euismod
-                            tincidunt ut laoreet dolore magna aliquam erat
-                            volutpat. Ut wisi enim ad minim Lorem ipsum dolor
-                            sit amet, consectetuer adipiscing elit, sed diam
-                            nonummy nibh euismod tincidunt ut laoreet dolore
-                            magna aliquam erat volutpat. Ut wisi enim ad minim{" "}
-                          </p>
-                        </div>
-                      </div>
-                      <div className="agendabtnwrap text-right col-auto p-0">
-                        <a className="faqbtn agendabtn" href="#">
-                          Learn More <span>&gt;</span>
-                        </a>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="cmnlist row">
-                <div className="col-lg-12 p-0">
-                  <div className="agendatxtwraper">
-                    <div className="agndatxtouter d-flex">
-                      <div className="cmnlisttxt col">
-                        <h3>
-                          Sharp Executive Welcome{" "}
-                          <span className="hrt-img">
-                            <img
-                              className
-                              src={
-                                process.env.PUBLIC_URL +
-                                "/assets/images/heart-empty.png"
-                              }
-                            />
-                          </span>
-                        </h3>
-                        <h3>Main Stage</h3>
-                      </div>
-                      <div className="agendabtnwrap text-right col-auto p-0">
-                        <a className="faqbtn agendabtn" href="#">
-                          Learn More <span>&gt;</span>
-                        </a>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="cmnlist row">
-                <div className="col-lg-12 p-0">
-                  <div className="agendatxtwraper">
-                    <div className="agndatxtouter d-flex">
-                      <div className="cmnlisttxt col">
-                        <h3>
-                          Emcee Introduction{" "}
-                          <span className="hrt-img">
-                            <img
-                              className
-                              src={
-                                process.env.PUBLIC_URL +
-                                "/assets/images/heart-empty.png"
-                              }
-                            />
-                          </span>
-                        </h3>
-                        <h3>Main Stage</h3>
-                      </div>
-                      <div className="agendabtnwrap text-right col-auto p-0">
-                        <a className="faqbtn agendabtn" href="#">
-                          Learn More <span>&gt;</span>
-                        </a>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="cmnlist row">
-                <div className="col-lg-12 p-0">
-                  <div className="agendatxtwraper">
-                    <div className="cmnlisttxt">
-                      <h2>9:20AM</h2>
-                    </div>
-                    <div className="agndatxtouter d-flex">
-                      <div className="cmnlisttxt col">
-                        <h3>
-                          Opening Keynote{" "}
-                          <span className="hrt-img">
-                            <img
-                              className
-                              src={
-                                process.env.PUBLIC_URL +
-                                "/assets/images/heart-empty.png"
-                              }
-                            />
-                          </span>
-                        </h3>
-                        <h3>Main Stage</h3>
-                      </div>
-                      <div className="agendabtnwrap text-right col-auto p-0">
-                        <a className="faqbtn agendabtn" href="#">
-                          Learn More <span>&gt;</span>
-                        </a>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+                );
+              })}
             </div>
-            {/*----==================faq listing section ends==================----*/}
           </div>
-        </div>{" "}
+        </div>
       </Layout>
     </div>
   );

@@ -22,7 +22,7 @@ const BreakoutSession = (props) => {
                   <h2>
                     Breakout Session A <span>|</span> 10:30AM - 11:15AM{" "}
                   </h2>
-                  <a href="#">Back to Agenda &gt;</a>
+                  <Link to="/agenda">Back to Agenda &gt;</Link>
                 </div>
                 {/* ---------------BREAKOUTsESSION_CAROUSEL------------------- */}
               <div>

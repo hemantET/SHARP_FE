@@ -1,16 +1,17 @@
 import React, { useState } from "react";
 import { Link, useHistory } from "react-router-dom";
+import { createNotification } from "../helpers/index";
 
-// import M from "materialize-css";
+//  import M from "materialize-css";
+
 const AdminLogin = () => {
   const history = useHistory();
-  //FORM DATA
+  //LOGIN DATA
   const [adminEmail, setEmail] = useState("");
   const [adminPassword, setPasword] = useState("");
   console.log("LOGIN_INPUT====>", adminEmail, adminPassword);
 
   const PostData = () => {
-    //console.log("heloo Login");
     fetch("/api/v1/auth/admin/login", {
       method: "post",
       headers: {
@@ -28,6 +29,8 @@ const AdminLogin = () => {
         if (adminData.data.token) {
           localStorage.setItem("jwt", adminData.data.token);
           localStorage.setItem("user", JSON.stringify(adminData.data.user));
+          // ----------------------TOAST----------------------------------------------------
+          createNotification("success");
           //dispatch({type:"USER",payload:data.user})
           // M.toast({
           //   html: "LOGIN SUCCESSFULL !",
@@ -35,6 +38,7 @@ const AdminLogin = () => {
           // });
           history.push("/admin/dashBoard");
         } else {
+          createNotification("error");
           history.push("/Login");
 
           // M.toast({ html: "LOGIN FAILED !", classes: "#c62828 red darken-3" });
@@ -109,6 +113,7 @@ const AdminLogin = () => {
                           data-toggle="modal"
                           data-target="#cmn-popup"
                           onClick={() => PostData()}
+                          style={{ height: "25px" }}
                         >
                           Login
                         </button>

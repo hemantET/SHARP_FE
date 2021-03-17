@@ -23,7 +23,7 @@ export const deleteUser = (id) => (dispatch, getState) => {
 export const editUser = (data) => (dispatch, getState) => {
   let newUSER =  data.user
 
-  if (newTodo) {
+  if (newUSER) {
     dispatch({
       type: "EDIT_USER",
       payload: {

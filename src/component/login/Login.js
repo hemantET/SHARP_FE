@@ -1,13 +1,20 @@
 import React, { useState } from "react";
+import { useDispatch } from "react-redux";
 import { Link, useHistory } from "react-router-dom";
 import "react-responsive-modal/styles.css";
 import { Modal } from "react-responsive-modal";
 import ReactDOM from "react-dom";
 import Countdown from "react-countdown";
-import { ToastContainer, toast } from 'react-toast'
-
+import "react-notifications/lib/notifications.css";
+import { addUser } from "../../redux/action";
+import { createNotification } from "../helpers/index";
+import {
+  NotificationContainer,
+  NotificationManager,
+} from "react-notifications";
 // import M from "materialize-css";
 const Login = () => {
+  const dispatch = useDispatch();
   const history = useHistory();
   //FORM DATA
   const [email, setEmail] = useState("");
@@ -17,12 +24,18 @@ const Login = () => {
   //CLICK OPERATION
   const [open, setOpen] = useState(false);
   const [open1, setOpen1] = useState(false);
+  const [loginCheck1, SetLoginCheck] = useState(false);
+  console.log("logincheck", loginCheck1);
 
   const onOpenModal = () => setOpen(true);
   const onCloseModal = () => setOpen(false);
   const onOpenModal1 = () => setOpen1(true);
   const onCloseModal1 = () => setOpen1(false);
   const Completionist = () => <span>You are good to go!</span>;
+  // const loginCheck=()=>SetLoginCheck(false)
+  const loginCheck = () => {
+    SetLoginCheck((loginCheck1) => !loginCheck1);
+  };
 
   const PostData = () => {
     //console.log("heloo Login");
@@ -39,20 +52,22 @@ const Login = () => {
       .then((res) => res.json())
       .then((data) => {
         console.log("USER_DATA====>", data);
-
+        createNotification("success");
         if (data.data.token) {
+          dispatch(addUser(data.data.user));
           localStorage.setItem("jwt", data.data.token);
           localStorage.setItem("user", JSON.stringify(data.data.user));
-          //dispatch({type:"USER",payload:data.user})
-          toast.error("err")
-          // M.toast({
-          //   html: "LOGIN SUCCESSFULL !",
-          //   classes: "#43a047 green darken-1",
-          // });
-          history.push("/dashBoard");
+
+          setTimeout(() => {
+            createNotification("success");
+            history.push("/dashBoard");
+          }, 2000);
+         
         } else {
           history.push("/Login");
-          toast.error("jhgajds")
+          setTimeout(() => {
+            createNotification("error");
+          }, 2000);
 
           // M.toast({ html: "LOGIN FAILED !", classes: "#c62828 red darken-3" });
         }
@@ -153,7 +168,7 @@ const Login = () => {
                       {/* ---------------------------------INSERT COUNTDOWN TIME------------------- */}
 
                       <Countdown
-                        date={Date.now() + 500000000}
+                        date={Date.now() + 3225600000}
                         renderer={renderer}
                       />
                     </div>
@@ -170,7 +185,6 @@ const Login = () => {
                           className="form-control"
                           value={email}
                           onChange={(e) => setEmail(e.target.value)}
-                          
                         />
                       </div>
                       <div className="form-group">
@@ -189,6 +203,7 @@ const Login = () => {
                             type="checkbox"
                             defaultValue
                             id="flexCheckDefault"
+                            onClick={loginCheck}
                           />
                           <label
                             className="form-check-label"
@@ -202,19 +217,34 @@ const Login = () => {
                             >
                             PRIVACY POLICY
                             </link> */}
-                            <span onClick={onOpenModal1}> PRIVACY POLICY</span>
+                            <span ><Link onClick={onOpenModal1}>PRIVACY POLICY</Link> </span>
                           </label>
                         </div>
-                        <button
-                          type="button"
-                          className="loginBtn"
-                          data-toggle="modal"
-                          data-target="#cmn-popup"
-                          // onClick={onOpenModal}
-                          onClick={() => PostData()}
-                        >
-                          Login
-                        </button>
+
+                        {loginCheck1 ? (
+                          <button
+                            type="button"
+                            className="loginBtn"
+                            data-toggle="modal"
+                            data-target="#cmn-popup"
+                            // onClick={onOpenModal}
+                            onClick={() => PostData()}
+                          >
+                            Login
+                          </button>
+                        ) : (
+                          <button
+                            type="button"
+                            className="loginBtndis"
+                            data-toggle="modal"
+                            data-target="#cmn-popup"
+                            disabled={true}
+                            // onClick={onOpenModal}
+                            onClick={() => PostData()}
+                          >
+                            Login
+                          </button>
+                        )}
                       </div>
                       <div className="form-error" style={{ display: "none" }}>
                         <p>
@@ -271,7 +301,7 @@ const Login = () => {
       {/*---------commonpopup ends---------*/}
       <Modal open={open1} onClose={onCloseModal1} center>
         {/* <div classNames="privacy_plcy"> */}
-        <div className="privacy_plcy modal-dialog modal-lg modal-dialog-centered">
+        <div className="privacy_plcy modal-dialog modal-lg modal-dialog-centered" style={{width:"610px"}}>
           {/* Modal content*/}
           <div className="modal-content">
             <div className="modal-header">
@@ -950,11 +980,10 @@ const Login = () => {
         </div>
         {/* </div> */}
       </Modal>
-   
-      <ToastContainer />
+
+      <NotificationContainer />
     </div>
- 
- );
+  );
 };
 
 export default Login;
